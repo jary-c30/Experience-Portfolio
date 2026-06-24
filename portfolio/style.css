@@ -1,0 +1,853 @@
+/* =====================================================================
+   STYLE.CSS — Portfolio Stylesheet for Zi Hao (Jary) Chen
+   Structure:
+     1. CSS Custom Properties (variables)
+     2. Reset & Base
+     3. Navigation
+     4. Hero
+     5. About
+     6. Skills
+     7. Projects
+     8. Timeline (Experience & Certificates)
+     9. Contact
+    10. Footer
+    11. Utilities (buttons, tags, containers)
+    12. Dark Mode
+    13. Animations
+    14. Media Queries (responsive / mobile)
+   ===================================================================== */
+
+
+/* =====================================================================
+   1. CSS CUSTOM PROPERTIES (VARIABLES)
+   Define colors, fonts, and spacing in one place.
+   To change the whole color scheme, only edit this block.
+   Usage: var(--variable-name)
+   ===================================================================== */
+:root {
+  /* Color palette — light mode defaults */
+  --bg:          #ffffff;          /* page background */
+  --bg-alt:      #f7f8fa;          /* alternate section background */
+  --surface:     #ffffff;          /* cards and panels */
+  --border:      #e4e8ef;          /* subtle borders */
+  --text:        #1a1d23;          /* primary text */
+  --text-muted:  #6b7280;          /* secondary/grey text */
+  --accent:      #6366f1;          /* indigo — main brand color */
+  --accent-dark: #4f46e5;          /* darker accent for hover states */
+  --accent-blue: #3b82f6;          /* blue variant for skill tags */
+  --accent-green: #10b981;         /* green variant for interest tags */
+  --dot-work:    #6366f1;          /* timeline dot — work experience */
+  --dot-cert:    #f59e0b;          /* timeline dot — certificate */
+  --dot-edu:     #10b981;          /* timeline dot — education */
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
+
+  /* Spacing scale */
+  --space-xs:  0.25rem;   /*  4px */
+  --space-sm:  0.5rem;    /*  8px */
+  --space-md:  1rem;      /* 16px */
+  --space-lg:  2rem;      /* 32px */
+  --space-xl:  4rem;      /* 64px */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* Transition — reuse for all hover animations */
+  --transition: 0.2s ease;
+}
+
+
+/* =====================================================================
+   2. RESET & BASE STYLES
+   Browsers have their own default styles that differ between them.
+   This reset makes everything consistent before we add our own styles.
+   ===================================================================== */
+
+/* box-sizing: border-box means padding/border are INCLUDED in element width,
+   not added on top — makes layout math much easier */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* smooth-scroll: clicking a nav link scrolls smoothly instead of jumping */
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.7;          /* space between lines of text */
+  font-size: 1rem;           /* 16px base font size */
+  transition: background-color var(--transition), color var(--transition);
+  /* transition on body allows smooth dark/light mode switch */
+}
+
+/* Remove default list bullet points */
+ul {
+  list-style: none;
+}
+
+/* Links inherit the text color by default instead of bright blue */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Images never overflow their container */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+
+/* =====================================================================
+   3. NAVIGATION
+   Fixed to top so it stays visible while scrolling.
+   Becomes slightly opaque on scroll (JS adds .scrolled class).
+   ===================================================================== */
+.nav {
+  position: fixed;          /* stays at top even when page scrolls */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;             /* sits above all other content */
+  background: rgba(255,255,255,0.85);
+  /* backdrop-filter blurs the content behind the nav (frosted glass effect) */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+/* Inner container limits the nav content width and spaces items apart */
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  height: 64px;
+  display: flex;             /* flexbox: puts logo, links, and button in a row */
+  align-items: center;       /* vertical center */
+  justify-content: space-between; /* space them to opposite ends + center */
+}
+
+/* Logo text on the left */
+.nav-logo {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* Horizontal list of nav links */
+.nav-links {
+  display: flex;
+  gap: var(--space-lg);     /* space between each link */
+}
+
+.nav-links a {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+/* Color changes on hover */
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+/* Dark/light mode toggle button */
+.theme-toggle {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 50%;       /* makes it a circle */
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;           /* show hand cursor on hover */
+  font-size: 1rem;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);    /* subtle grow effect on hover */
+}
+
+
+/* =====================================================================
+   4. HERO SECTION
+   Full-height intro — uses flexbox to center content vertically.
+   ===================================================================== */
+.hero {
+  min-height: 100vh;        /* full viewport height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px var(--space-lg) var(--space-xl);
+  /* 100px top padding accounts for the fixed nav height */
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--accent) 5%, var(--bg)) 100%
+  );
+  /* color-mix blends 5% of the accent color into the background for a subtle tint */
+}
+
+.hero-content {
+  max-width: 700px;
+}
+
+.hero-greeting {
+  font-size: 1.1rem;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-mono);
+}
+
+/* Main name — largest text on the page */
+.hero-name {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  /* clamp(min, preferred, max) — scales with viewport width, within limits */
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: var(--space-md);
+  letter-spacing: -0.02em;  /* tighter letter spacing looks better at large sizes */
+}
+
+/* The accent span inside the name — colored differently */
+.accent {
+  color: var(--accent);
+}
+
+.hero-tagline {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.hero-sub {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-mono);
+}
+
+/* Button row */
+.hero-actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;           /* buttons wrap to next line on small screens */
+}
+
+/* Social links row below the buttons */
+.hero-links {
+  display: flex;
+  gap: var(--space-lg);
+  justify-content: center;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color var(--transition), transform var(--transition);
+}
+
+.social-link:hover {
+  color: var(--accent);
+  transform: translateY(-2px); /* lifts up slightly on hover */
+}
+
+/* Scroll hint at the bottom of the hero */
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  animation: fadeInUp 1s ease 1s both; /* fades in after 1 second delay */
+}
+
+/* The bouncing arrow below "scroll" text */
+.scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg);  /* rotate a square corner to make a down-arrow */
+  animation: bounce 1.5s infinite;
+}
+
+
+/* =====================================================================
+   5. ABOUT SECTION
+   ===================================================================== */
+.about-grid {
+  display: grid;
+  /* Two columns: text takes 60%, stats take 40% */
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.about-text p {
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+  font-size: 1.05rem;
+}
+
+/* 2x2 grid of stat cards */
+.about-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+}
+
+
+/* =====================================================================
+   6. SKILLS SECTION
+   ===================================================================== */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* auto-fit: fills as many columns as possible; minmax ensures min 280px per column */
+  gap: var(--space-lg);
+}
+
+.skill-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.skill-group-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;  /* ALL CAPS */
+  letter-spacing: 0.1em;      /* wide spacing looks good on labels */
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+/* Tag container — flex wraps tags to next line when they overflow */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+/* Base tag style — pill-shaped badge */
+.tag {
+  padding: 4px 12px;
+  border-radius: 999px;       /* fully rounded pill shape */
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  transition: transform var(--transition);
+}
+
+.tag:hover {
+  transform: scale(1.05);
+}
+
+/* Blue variant for Tools section */
+.tag-blue {
+  background: color-mix(in srgb, var(--accent-blue) 12%, transparent);
+  color: var(--accent-blue);
+  border-color: color-mix(in srgb, var(--accent-blue) 25%, transparent);
+}
+
+/* Green variant for Interests section */
+.tag-green {
+  background: color-mix(in srgb, var(--accent-green) 12%, transparent);
+  color: var(--accent-green);
+  border-color: color-mix(in srgb, var(--accent-green) 25%, transparent);
+}
+
+
+/* =====================================================================
+   7. PROJECTS SECTION
+   ===================================================================== */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-lg);
+}
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+  /* Left accent border that appears on hover */
+  border-left: 3px solid transparent;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--accent);
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-sm);
+  gap: var(--space-md);
+}
+
+.project-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.project-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;      /* prevents the date from wrapping to a new line */
+}
+
+/* Tech stack label */
+.project-lang {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-bottom: var(--space-md);
+}
+
+.project-bullets {
+  padding-left: var(--space-md);
+  list-style: disc;          /* show bullet points for project lists */
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.project-bullets li {
+  margin-bottom: var(--space-xs);
+}
+
+
+/* =====================================================================
+   8. TIMELINE (Experience & Certificates)
+   A vertical line with dots and content blocks beside each dot.
+   ===================================================================== */
+.timeline {
+  position: relative;
+  padding-left: 40px;       /* space for the dots and line on the left */
+}
+
+/* The vertical connecting line — a pseudo-element on the container */
+.timeline::before {
+  content: '';              /* pseudo-elements need content (even if empty) */
+  position: absolute;
+  left: 12px;               /* align with center of dots (dot is 24px wide, half = 12px) */
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--space-xl);
+}
+
+/* The colored circle dot on the timeline line */
+.timeline-dot {
+  position: absolute;
+  left: -34px;              /* positions the dot on the line (left: -padding + offset) */
+  top: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--dot-work);
+  border: 3px solid var(--bg);
+  /* border creates white ring around dot, separating it from the line */
+  box-shadow: 0 0 0 2px var(--dot-work);
+}
+
+/* Different dot colors for each type */
+.timeline-dot-cert {
+  background: var(--dot-cert);
+  box-shadow: 0 0 0 2px var(--dot-cert);
+}
+
+.timeline-dot-edu {
+  background: var(--dot-edu);
+  box-shadow: 0 0 0 2px var(--dot-edu);
+}
+
+.timeline-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-xs);
+  gap: var(--space-md);
+}
+
+.timeline-header h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.timeline-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+
+/* Organization / school name */
+.timeline-org {
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: var(--space-md);
+}
+
+.timeline-bullets {
+  padding-left: var(--space-md);
+  list-style: disc;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.timeline-bullets li {
+  margin-bottom: var(--space-xs);
+}
+
+
+/* =====================================================================
+   9. CONTACT SECTION
+   ===================================================================== */
+.contact-sub {
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  font-size: 1.05rem;
+}
+
+/* Three side-by-side contact cards */
+.contact-cards {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.contact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+
+/* =====================================================================
+   10. FOOTER
+   ===================================================================== */
+.footer {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+
+/* =====================================================================
+   11. UTILITIES
+   Reusable classes used across multiple sections.
+   ===================================================================== */
+
+/* Section wrapper: limits width and adds side padding */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* Consistent section spacing */
+.section {
+  padding: var(--space-xl) 0;
+}
+
+/* Alternate background for every other section */
+.section-alt {
+  background-color: var(--bg-alt);
+}
+
+/* Section heading with accent underline */
+.section-title {
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 700;
+  margin-bottom: var(--space-xl);
+  text-align: center;
+  position: relative;
+}
+
+/* The short colored underline beneath section titles */
+.section-title::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+  margin: var(--space-sm) auto 0;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 28px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all var(--transition);
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+/* Filled button */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+/* Outline-only button */
+.btn-outline {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+
+/* =====================================================================
+   12. DARK MODE
+   When the user toggles dark mode, JS adds class="dark" to <html>.
+   These rules override the light mode variables for dark backgrounds.
+   ===================================================================== */
+html.dark {
+  --bg:          #0f1117;
+  --bg-alt:      #161b25;
+  --surface:     #1c2233;
+  --border:      #2a3347;
+  --text:        #e8ecf4;
+  --text-muted:  #8b9ab5;
+  /* Accent colors stay the same — they're vivid enough on dark backgrounds */
+}
+
+/* Nav background in dark mode */
+html.dark .nav {
+  background: rgba(15, 17, 23, 0.85);
+}
+
+/* The hero gradient in dark mode */
+html.dark .hero {
+  background: linear-gradient(
+    135deg,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--accent) 8%, var(--bg)) 100%
+  );
+}
+
+
+/* =====================================================================
+   13. ANIMATIONS
+   @keyframes define reusable motion sequences.
+   Apply them with the animation property.
+   ===================================================================== */
+
+/* Fade in from below — used on hero elements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Bouncing arrow animation */
+@keyframes bounce {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50%       { transform: rotate(45deg) translateY(6px); }
+}
+
+/* Apply staggered fade-in to hero elements */
+.hero-greeting  { animation: fadeInUp 0.6s ease both; }
+.hero-name      { animation: fadeInUp 0.6s ease 0.1s both; }
+.hero-tagline   { animation: fadeInUp 0.6s ease 0.2s both; }
+.hero-sub       { animation: fadeInUp 0.6s ease 0.3s both; }
+.hero-actions   { animation: fadeInUp 0.6s ease 0.4s both; }
+.hero-links     { animation: fadeInUp 0.6s ease 0.5s both; }
+/* Each has a slightly longer delay (0.1s more) — creates a staggered cascade effect */
+
+
+/* =====================================================================
+   14. MEDIA QUERIES (RESPONSIVE DESIGN)
+   @media rules apply styles only at certain screen widths.
+   We use a "desktop-first" approach — base styles are for wide screens,
+   then we adjust for smaller ones below.
+   ===================================================================== */
+
+/* Tablet and below (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Hide nav links on mobile — in a real project you'd add a hamburger menu */
+  .nav-links {
+    display: none;
+  }
+
+  /* Stack about section vertically */
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack timeline header on small screens */
+  .timeline-header {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  /* Stack project header */
+  .project-header {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  /* Stack contact cards */
+  .contact-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-card {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+  }
+}
+
+/* Small phones (max-width: 480px) */
+@media (max-width: 480px) {
+  .hero-name {
+    font-size: 2rem;
+  }
+
+  /* Stack hero buttons vertically */
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+}
